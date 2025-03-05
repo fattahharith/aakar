@@ -1,101 +1,92 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+
+// Import background with dynamic loading and no SSR
+const OrganicBackground = dynamic(
+  () => import('../components/OrganicBackground'),
+  { ssr: false }
+);
+
+// Import fallback background as a backup
+const FallbackBackground = dynamic(
+  () => import('../components/FallbackBackground'),
+  { ssr: false }
+);
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  // State to track if animations should start
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [canvasSupported, setCanvasSupported] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Set loaded state after component mounts
+  useEffect(() => {
+    setIsLoaded(true);
+
+    // Check if canvas is supported
+    const testCanvas = document.createElement('canvas');
+    const isCanvasSupported = !!(testCanvas.getContext && testCanvas.getContext('2d'));
+    setCanvasSupported(isCanvasSupported);
+
+    // Add a failsafe in case the canvas is supported but doesn't render
+    const rootCheckTimer = setTimeout(() => {
+      const canvas = document.querySelector('canvas');
+      if (canvas) {
+        try {
+          const ctx = canvas.getContext('2d');
+          ctx?.getImageData(0, 0, 1, 1);
+        } catch (e) {
+          setCanvasSupported(false);
+        }
+      }
+    }, 5000);
+
+    return () => clearTimeout(rootCheckTimer);
+  }, []);
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      {/* Interactive Tree/Root Background or Fallback */}
+      {canvasSupported ? <OrganicBackground /> : <FallbackBackground />}
+
+      {/* Hero Content */}
+      <div className="container mx-auto px-4 pt-20 sm:pt-28 lg:pt-40 relative z-20">
+        <div className={`max-w-4xl transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          {/* Logo/Brand */}
+          <div className="mb-6 metallic-text text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+            The Aakar Project
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+            Sustainable Future <br className="hidden sm:block" />
+            <span className="metallic-text">Through Technology</span>
+          </h1>
+
+          {/* Subheading */}
+          <p className="text-xl md:text-2xl mb-10 text-foreground/90 max-w-2xl leading-relaxed">
+            Building software, data, and AI solutions that directly contribute to sustainability projects in Malaysia.
+          </p>
+
+          {/* CTA Button */}
+          <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            <button className="glossy-button text-white font-bold py-4 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 mr-4">
+              Get Started
+            </button>
+            <button
+              className="bg-transparent border-2 border-metal-highlight hover:bg-accent/10 text-foreground font-bold py-4 px-8 rounded-full text-lg transition-all duration-300"
+            >
+              Learn More
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Add subtle blur gradient */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10"></div>
+
+      <div className={`absolute -bottom-10 right-10 w-64 h-64 rounded-full bg-primary/10 blur-3xl transition-all duration-1000 delay-500 ${isLoaded ? 'opacity-60' : 'opacity-0'} z-10`}></div>
     </div>
   );
 }

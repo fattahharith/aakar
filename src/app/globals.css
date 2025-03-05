@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8faf8; /* Very light mint background */
+  --foreground: #2c3e2c; /* Forest green text */
+  --primary: #4a8c6a; /* Rich sage green primary color */
+  --secondary: #9c7e5a; /* Warm earth/wood tone secondary */
+  --accent: #6ab04c; /* Fresh leaf green accent */
+  --light-accent: #e7f4e4; /* Very light mint highlight */
+  --dark-surface: #ffffff; /* White surface color */
+  --metal-highlight: #7bae3e; /* Bright natural green highlight */
+  --root-color: rgba(74, 140, 106, 0.8); /* Root branch color */
+  --root-highlight: rgba(106, 176, 76, 1); /* Highlighted root color */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-light-accent: var(--light-accent);
+  --color-dark-surface: var(--dark-surface);
+  --color-metal-highlight: var(--metal-highlight);
+  --color-root: var(--root-color);
+  --color-root-highlight: var(--root-highlight);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f8faf8; /* Very light mint background */
+    --foreground: #2c3e2c; /* Forest green text */
+    --primary: #4a8c6a; /* Rich sage green primary */
+    --secondary: #9c7e5a; /* Warm earth tone secondary */
+    --accent: #6ab04c; /* Fresh leaf green accent */
+    --light-accent: #e7f4e4; /* Very light mint highlight */
+    --dark-surface: #ffffff; /* White surface color */
+    --metal-highlight: #7bae3e; /* Bright natural green highlight */
+    --root-color: rgba(74, 140, 106, 0.8); /* Root branch color */
+    --root-highlight: rgba(106, 176, 76, 1); /* Highlighted root color */
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Natural gradient background */
+.bg-gradient {
+  background: linear-gradient(135deg, #f8faf8 0%, #edf7ed 50%, #f5f9f5 100%);
+}
+
+/* For canvas animation */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 6s ease-in-out infinite;
+}
+
+/* Add a metallic text effect for headings */
+.metallic-text {
+  background: linear-gradient(180deg, #7bae3e 0%, var(--primary) 50%, #3a6a50 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(74, 140, 106, 0.15);
+}
+
+/* Style for glossy buttons */
+.glossy-button {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.glossy-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.glossy-button:hover::before {
+  left: 100%;
 }
