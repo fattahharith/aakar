@@ -3,22 +3,31 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
-// Import background with dynamic loading and no SSR
-const OrganicBackground = dynamic(
-  () => import('../components/OrganicBackground'),
-  { ssr: false }
-);
+// Import EnhancedTree with no SSR
+const EnhancedTree = dynamic(() => import('../components/EnhancedTree'), {
+  ssr: false,
+});
 
-// Import fallback background as a backup
-const FallbackBackground = dynamic(
-  () => import('../components/FallbackBackground'),
-  { ssr: false }
+// Fallback component in case tree fails to load
+const FallbackTree = () => (
+  <div className="fixed top-0 right-0 h-full w-64 pointer-events-none" style={{ opacity: 0.4 }}>
+    <svg viewBox="0 0 100 400" preserveAspectRatio="none" className="h-full w-full">
+      <path
+        d="M50,400 L50,150 M30,200 L70,200 M20,250 L80,250 M40,180 L60,180 M35,220 L65,220"
+        stroke="#5d4037"
+        strokeWidth="6"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  </div>
 );
 
 export default function Home() {
   // State to track if animations should start
   const [isLoaded, setIsLoaded] = useState(false);
   const [canvasSupported, setCanvasSupported] = useState(true);
+  const [treeError, setTreeError] = useState(false);
 
   // Set loaded state after component mounts
   useEffect(() => {
@@ -30,32 +39,44 @@ export default function Home() {
     setCanvasSupported(isCanvasSupported);
 
     // Add a failsafe in case the canvas is supported but doesn't render
-    const rootCheckTimer = setTimeout(() => {
+    const canvasCheckTimer = setTimeout(() => {
       const canvas = document.querySelector('canvas');
       if (canvas) {
         try {
           const ctx = canvas.getContext('2d');
           ctx?.getImageData(0, 0, 1, 1);
-        } catch (e) {
+        } catch {
           setCanvasSupported(false);
         }
       }
     }, 5000);
 
-    return () => clearTimeout(rootCheckTimer);
+    return () => clearTimeout(canvasCheckTimer);
   }, []);
+
+  // Error boundary for the tree component
+  const handleTreeError = () => {
+    console.error("Tree component failed to render");
+    setTreeError(true);
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      {/* Interactive Tree/Root Background or Fallback */}
-      {canvasSupported ? <OrganicBackground /> : <FallbackBackground />}
+      {/* Enhanced Tree Animation with error handling */}
+      {canvasSupported && !treeError ? (
+        <div onError={handleTreeError}>
+          <EnhancedTree />
+        </div>
+      ) : (
+        <FallbackTree />
+      )}
 
       {/* Hero Content */}
       <div className="container mx-auto px-4 pt-20 sm:pt-28 lg:pt-40 relative z-20">
         <div className={`max-w-4xl transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           {/* Logo/Brand */}
-          <div className="mb-6 metallic-text text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-            The Aakar Project
+          <div className="mb-8">
+            <div className="project-title">The Aakar Project</div>
           </div>
 
           {/* Headline */}
@@ -75,7 +96,7 @@ export default function Home() {
               Get Started
             </button>
             <button
-              className="bg-transparent border-2 border-metal-highlight hover:bg-accent/10 text-foreground font-bold py-4 px-8 rounded-full text-lg transition-all duration-300"
+              className="bg-transparent border-2 border-metal-highlight hover:bg-accent/10 text-foreground py-4 px-8 rounded-full text-lg transition-all duration-300 accent-text"
             >
               Learn More
             </button>

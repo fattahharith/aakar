@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import ClientComponentWrapper from "../components/ClientComponentWrapper";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Modern, clean sans-serif font for body text
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Modern, geometric font for headings
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Modern, distinctive font for accents and tech-related elements
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
   display: "swap",
 });
@@ -53,9 +63,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
+        className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} antialiased bg-background`}
       >
         {children}
+        <ClientComponentWrapper />
       </body>
     </html>
   );
